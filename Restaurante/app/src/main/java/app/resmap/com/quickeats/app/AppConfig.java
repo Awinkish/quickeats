@@ -1,6 +1,7 @@
 package app.resmap.com.quickeats.app;
 
 public class AppConfig {
+
 	// Server login url user
 	public static String URL_LOGIN_USER = "http://192.168.3.139/quickeats/login.php";
 

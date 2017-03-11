@@ -41,7 +41,7 @@ public class MainActivity extends Activity {
 
 		HashMap<String, String> user = db.getUserDetails();
 
-		String name = user.get("name");
+		String name = user.get("fname");
 		String email = user.get("email");
 
 		txtName.setText(name);

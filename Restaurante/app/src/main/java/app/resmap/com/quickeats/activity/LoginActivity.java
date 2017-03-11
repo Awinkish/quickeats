@@ -55,11 +55,11 @@ public class LoginActivity extends Activity {
         userLayout = (LinearLayout) findViewById(R.id.user);
         agentLayout = (LinearLayout) findViewById(R.id.agent);
 
-        // Progress dialog
+
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
 
-        // SQLite database handler
+
         db = new SQLiteHandler(getApplicationContext());
 
         // Session manager
@@ -67,13 +67,13 @@ public class LoginActivity extends Activity {
 
         // Check if user is already logged in or not
         if (session.isLoggedIn()) {
-            // User is already logged in. Take him to main activity
+
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
         }
 
-        // Link to Register Screen
+
         btnLinkToRegister.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
@@ -114,13 +114,12 @@ public class LoginActivity extends Activity {
                     JSONObject jObj = new JSONObject(response);
                     boolean error = jObj.getBoolean("error");
 
-                    // Check for error node in json
+
                     if (!error) {
-                        // user successfully logged in
-                        // Create login session
+
                         session.setLogin(true);
 
-                        // Now store the user in SQLite
+                        // store   in SQLite
                         String uid = jObj.getString("uid");
 
                         JSONObject user = jObj.getJSONObject("user");
@@ -129,16 +128,15 @@ public class LoginActivity extends Activity {
                         String created_at = user
                                 .getString("created_at");
 
-                        // Inserting row in users table
                         db.addUser(name, email, uid, created_at);
 
-                        // Launch main activity
+
                         Intent intent = new Intent(LoginActivity.this,
                                 MainActivity.class);
                         startActivity(intent);
                         finish();
                     } else {
-                        // Error in login. Get the error message
+
                         String errorMsg = jObj.getString("error_msg");
                         Toast.makeText(getApplicationContext(),
                                 errorMsg, Toast.LENGTH_LONG).show();
@@ -233,21 +231,21 @@ public class LoginActivity extends Activity {
 
             });
         }else{
-            // Login button Click Event
+
             btnLogin.setOnClickListener(new View.OnClickListener() {
 
                 public void onClick(View view) {
                     String email = inputEmail.getText().toString().trim();
                     String password = inputPassword.getText().toString().trim();
 
-                    // Check for empty data in the form
+
                     if (!email.isEmpty() && !password.isEmpty()) {
-                        // login user
+
                         checkLogin(email, password);
                     } else {
-                        // Prompt user to enter credentials
+
                         Toast.makeText(getApplicationContext(),
-                                "Please enter the credentials Man!", Toast.LENGTH_LONG)
+                                "Please enter the credentials!", Toast.LENGTH_LONG)
                                 .show();
                     }
                 }
