@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Quickeats</string>
+    <string name="hint_email">Email/Phone</string>
+    <string name="hint_password">New Password</string>
+    <string name="hint_name">Fullname</string>
+    <string name="btn_login">LOGIN</string>
+    <string name="btn_register">REGISTER</string>
+    <string name="btn_link_to_register">Not a member? Sign up now.</string>
+    <string name="btn_link_to_login">Already registred! Login Me.</string>
+    <string name="welcome">Welcome</string>
+    <string name="btn_logout">LOGOUT</string>
+    <string name="name">Fullname</string>
+    <string name="hint_sec">Second Name</string>
+    <string name="first_name">First Name</string>
+    <string name="btn_agent">Agent</string>
+    <string name="btn_user">User</string>
+    <string name="hint_mobile">Phone No</string>
+    <string name="referral_optional">Referral Code (Optional)</string>
+    <string name="hint_email_only">Email</string>
+    <string name="hint_password_confirm">Confirm password</string>
+
+</resources>
