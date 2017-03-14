@@ -3,7 +3,7 @@
 
     <string name="app_name">Quickeats</string>
     <string name="hint_email">Email/Phone</string>
-    <string name="hint_password">New Password</string>
+    <string name="hint_password">Password</string>
     <string name="hint_name">Fullname</string>
     <string name="btn_login">LOGIN</string>
     <string name="btn_register">REGISTER</string>

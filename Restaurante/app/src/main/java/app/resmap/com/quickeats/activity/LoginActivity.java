@@ -3,11 +3,17 @@ package app.resmap.com.quickeats.activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -27,18 +33,21 @@ import app.resmap.com.quickeats.app.*;
 import app.resmap.com.quickeats.app.AppController;
 import app.resmap.com.quickeats.helper.SQLiteHandler;
 import app.resmap.com.quickeats.helper.SessionManager;
+import info.hoang8f.android.segmented.SegmentedGroup;
 
 
 public class LoginActivity extends Activity {
     private static final String TAG = RegisterActivity.class.getSimpleName();
     private Button btnLogin;
     private Button btnLinkToRegister;
+    private Button btnLoginAgent;
     private EditText inputEmail;
-    private EditText inputPassword;
+    private EditText inputPassword, inputEmailAgent, inputPasswordAgent;
     private ProgressDialog pDialog;
     private SessionManager session;
     private SQLiteHandler db;
-    boolean userLogin = true;
+    boolean userLogin;
+    String tab;
 
     LinearLayout agentLayout, userLayout;
 
@@ -48,12 +57,46 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
 
         inputEmail = (EditText) findViewById(R.id.email);
+        inputEmailAgent = (EditText) findViewById(R.id.email_agent);
         inputPassword = (EditText) findViewById(R.id.password);
+        inputPasswordAgent = (EditText) findViewById(R.id.password_agent);
         btnLogin = (Button) findViewById(R.id.btnLogin);
+        btnLoginAgent = (Button) findViewById(R.id.btnLogin_agent);
         btnLinkToRegister = (Button) findViewById(R.id.btnLinkToRegisterScreen);
 
         userLayout = (LinearLayout) findViewById(R.id.user);
         agentLayout = (LinearLayout) findViewById(R.id.agent);
+
+        SegmentedGroup segmented3 = (SegmentedGroup) findViewById(R.id.segmented2);
+        segmented3.setTintColor(Color.parseColor("#CCCCCC"), Color.parseColor("#FFFFFF"));
+
+        Bundle extras = getIntent().getExtras();
+
+        if(extras != null){
+            tab = extras.getString("tab");
+            if (tab.equals("user") )
+                segmented3.check(R.id.button21);
+                else segmented3.check(R.id.button22);
+        }else {
+            segmented3.check(R.id.button21);
+        }
+
+        //logoRounded();
+
+
+        segmented3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (view.getId() == R.id.button21) {
+
+
+                    //some code
+                } else if (view.getId() == R.id.button22) {
+                    //some code
+                }
+            }
+        });
 
 
         pDialog = new ProgressDialog(this);
@@ -73,7 +116,6 @@ public class LoginActivity extends Activity {
             finish();
         }
 
-
         btnLinkToRegister.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
@@ -84,11 +126,29 @@ public class LoginActivity extends Activity {
             }
         });
 
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View view) {
+                String email = inputEmail.getText().toString().trim();
+                String password = inputPassword.getText().toString().trim();
+
+
+                if (!email.isEmpty() && !password.isEmpty()) {
+                    // login user
+                    checkLogin(email, password);
+                } else {
+
+                    Toast.makeText(getApplicationContext(),
+                            "Please enter the credentials!", Toast.LENGTH_LONG)
+                            .show();
+                }
+            }
+
+        });
+
+
     }
 
-    /**
-     * verify login details
-     * */
     private void checkLogin(final String email, final String password) {
         // Tag used to cancel the request
         String tag_string_req = "req_login";
@@ -99,7 +159,7 @@ public class LoginActivity extends Activity {
         String url;
 
         if (userLogin)
-          url = AppConfig.URL_LOGIN_USER;
+            url = AppConfig.URL_LOGIN_USER;
          else  url = AppConfig.URL_LOGIN_AGENT;
 
         StringRequest strReq = new StringRequest(Method.POST,
@@ -130,9 +190,9 @@ public class LoginActivity extends Activity {
 
                         db.addUser(name, email, uid, created_at);
 
-
                         Intent intent = new Intent(LoginActivity.this,
                                 MainActivity.class);
+
                         startActivity(intent);
                         finish();
                     } else {
@@ -165,6 +225,7 @@ public class LoginActivity extends Activity {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("email", email);
                 params.put("password", password);
+
 
                 return params;
             }
@@ -224,7 +285,7 @@ public class LoginActivity extends Activity {
                     } else {
                         // Prompt user to enter credentials
                         Toast.makeText(getApplicationContext(),
-                                "Please enter the credentials!", Toast.LENGTH_LONG)
+                                "Please enter the credentials User!", Toast.LENGTH_LONG)
                                 .show();
                     }
                 }
@@ -232,11 +293,11 @@ public class LoginActivity extends Activity {
             });
         }else{
 
-            btnLogin.setOnClickListener(new View.OnClickListener() {
+            btnLoginAgent.setOnClickListener(new View.OnClickListener() {
 
                 public void onClick(View view) {
-                    String email = inputEmail.getText().toString().trim();
-                    String password = inputPassword.getText().toString().trim();
+                    String email = inputEmailAgent.getText().toString().trim();
+                    String password = inputPasswordAgent.getText().toString().trim();
 
 
                     if (!email.isEmpty() && !password.isEmpty()) {
@@ -245,7 +306,7 @@ public class LoginActivity extends Activity {
                     } else {
 
                         Toast.makeText(getApplicationContext(),
-                                "Please enter the credentials!", Toast.LENGTH_LONG)
+                                "Please enter the credentials Agent!", Toast.LENGTH_LONG)
                                 .show();
                     }
                 }

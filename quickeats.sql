@@ -65,7 +65,6 @@ CREATE TABLE IF NOT EXISTS `agentearnings` (
 
 CREATE TABLE IF NOT EXISTS `delivery_agents` (
   `agent_id` int(11) NOT NULL,
-  `unique_id` varchar(23) not null unique,
   `firstname` text NOT NULL,
   `lastname` text NOT NULL,
   `current_lat` decimal(10,5) NOT NULL,
@@ -74,12 +73,9 @@ CREATE TABLE IF NOT EXISTS `delivery_agents` (
   `phoneno` varchar(20) NOT NULL,
   `account_status` varchar(20) NOT NULL,
   `password` varchar(80) NOT NULL,
-  `salt` varchar(10) NOT NULL,
   `email` text NOT NULL,
   `delivery_earning` float NOT NULL,
-  `total_delivery_earning` double NOT NULL,
-  `created_at` datetime,
-  `updated_at` datetime NULL
+  `total_delivery_earning` double NOT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
 --
@@ -168,12 +164,10 @@ INSERT INTO `restaurants` (`restaurant_id`, `restaurant_name`, `Address_lat`, `A
 
 CREATE TABLE IF NOT EXISTS `users` (
   `userid` int(11) NOT NULL,
-  `unique_id` varchar(23) not null unique,
   `firstname` text NOT NULL,
   `lastname` text NOT NULL,
   `email` text NOT NULL,
   `password` varchar(10) NOT NULL,
-  `salt` varchar(80) NOT NULL,
   `address_lat` decimal(10,5) NOT NULL,
   `address_lng` decimal(10,5) NOT NULL,
   `formatted_address` text NOT NULL,
@@ -182,10 +176,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `refferal_code` varchar(1000) DEFAULT NULL,
   `discount` double NOT NULL DEFAULT '0',
   `reffered_by` int(11) NOT NULL,
-  `no_of_refferals` int(11) NOT NULL,
-  `created_at` datetime,
-  `updated_at` datetime NULL
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=latin1;
+  `no_of_refferals` int(11) NOT NULL
+) ENGINE = InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `users`

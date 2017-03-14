@@ -2,17 +2,18 @@
 <resources>
 
     <color name="bg_login">#26ae90</color>
-    <color name="bg_register">#337ab7</color>
+    <color name="bg_register">#dfce4b</color>
     <color name="bg_main">#428bca</color>
-    <color name="white">#ffffff</color>
-    <color name="input_login">#222222</color>
+    <color name="white">#f8f8f2</color>
+    <color name="input_login">#212226</color>
     <color name="input_login_hint">#999999</color>
     <color name="input_register">#888888</color>
     <color name="input_register_bg">#3b4148</color>
     <color name="input_register_hint">#5e6266</color>
-    <color name="btn_login">#26ae90</color>
-    <color name="btn_login_bg">#eceef1</color>
+    <color name="btn_login">#3c5a54</color>
+    <color name="btn_login_bg">#e1253124</color>
     <color name="lbl_name">#333333</color>
     <color name="btn_logut_bg">#ff6861</color>
-
+    <color name="dark_text_input_bg">#d20e0808</color>
+    <color name="dark_text_input_fg">#dfdec8</color>
 </resources>

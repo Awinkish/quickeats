@@ -22,14 +22,18 @@ class DB_Functions {
      * Storing new user
      * returns user details
      */
-    public function storeUser($fname, $sname, $referral ,$mobile, $email, $password) {
+    public function storeUser($fname, $sname, $referral ,$mobile, $email, $password, $userid) {
         $uuid = uniqid('', true);
         $hash = $this->hashSSHA($password);
-        $encrypted_password = $hash["encrypted"]; // encrypted password
+        $encrypted_password = md5($password); // encrypted password
         $salt = $hash["salt"]; // salt
+        
+        if($referral != ""){
+           updateReferrer($referral);
+        }
 
-        $stmt = $this->conn->prepare("INSERT INTO users(unique_id, firstname, lastname, referral, mobile, email, password, salt, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-        $stmt->bind_param("sssss", $uuid, $fname, $sname, $referral ,$mobile, $email, $encrypted_password, $salt);
+        $stmt = $this->conn->prepare("INSERT INTO users(unique_id, firstname, lastname, refferal_code, phoneno, email, password, salt, reffered_by, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+        $stmt->bind_param("sssssssss", $uuid, $fname, $sname, $referral ,$mobile, $email, $encrypted_password, $salt, $userid);
         $result = $stmt->execute();
         $stmt->close();
 
@@ -55,17 +59,17 @@ class DB_Functions {
     public function storeAgent($fname, $sname, $mobile, $email, $password) {
         $uuid = uniqid('', true);
         $hash = $this->hashSSHA($password);
-        $encrypted_password = $hash["encrypted"]; // encrypted password
+        $encrypted_password = md5($password); // encrypted password
         $salt = $hash["salt"]; // salt
 
-        $stmt = $this->conn->prepare("INSERT INTO users(unique_id, fname, sname, mobile, email, password, salt, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, NOW())");
-        $stmt->bind_param("sssss", $uuid, $fname, $sname, $mobile, $email, $encrypted_password, $salt);
+        $stmt = $this->conn->prepare("INSERT INTO delivery_agents(unique_id, firstname, lastname, phoneno, email, password, salt, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, NOW())");
+        $stmt->bind_param("sssssss", $uuid, $fname, $sname, $mobile, $email, $encrypted_password, $salt);
         $result = $stmt->execute();
         $stmt->close();
 
         // check for successful store
         if ($result) {
-            $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
+            $stmt = $this->conn->prepare("SELECT * FROM delivery_agents WHERE email = ?");
             $stmt->bind_param("s", $email);
             $stmt->execute();
             $user = $stmt->get_result()->fetch_assoc();
@@ -82,7 +86,13 @@ class DB_Functions {
      */
     public function getUserByEmailAndPassword($email, $password) {
 
-        $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
+    
+        if (is_numeric($email) ) {
+            $stmt = $this->conn->prepare("SELECT * FROM users WHERE phoneno = ?");
+        }else{
+            $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
+        }
+        
 
         $stmt->bind_param("s", $email);
 
@@ -91,11 +101,9 @@ class DB_Functions {
             $stmt->close();
 
             // verifying user password
-            $salt = $user['salt'];
-            $encrypted_password = $user['encrypted_password'];
-            $hash = $this->checkhashSSHA($salt, $password);
-            // check for password equality
-            if ($encrypted_password == $hash) {
+            $encrypted_password = $user['password'];
+            
+            if ($encrypted_password == md5($password)) {
                 // user authentication details are correct
                 return $user;
             }
@@ -109,7 +117,8 @@ class DB_Functions {
      */
     public function getAgentByEmailAndPassword($email, $password) {
 
-        $stmt = $this->conn->prepare("SELECT * FROM delivery_agents WHERE email = ?");
+
+        $stmt = $this->conn->prepare("SELECT * FROM delivery_agents WHERE phoneno = ?");
 
         $stmt->bind_param("s", $email);
 
@@ -118,11 +127,9 @@ class DB_Functions {
             $stmt->close();
 
             // verifying user password
-            $salt = $user['salt'];
-            $encrypted_password = $user['encrypted_password'];
-            $hash = $this->checkhashSSHA($salt, $password);
-            // check for password equality
-            if ($encrypted_password == $hash) {
+            $encrypted_password = $user['password'];
+            
+            if ($encrypted_password == md5($password)) {
                 // user authentication details are correct
                 return $user;
             }
@@ -130,14 +137,39 @@ class DB_Functions {
             return NULL;
         }
     }
+    
+    public function updateReferrer(){
+    
+
+
+    }
 
     /**
      * Check user is existed or not
      */
-    public function isUserExisted($email) {
-        $stmt = $this->conn->prepare("SELECT email from users WHERE email = ?");
+    public function isUserExisted($email,$table) {
+        $stmt = $this->conn->prepare("SELECT email from ". $table ." users WHERE email = ?");
 
         $stmt->bind_param("s", $email);
+
+        $stmt->execute();
+
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            // user existed 
+            $stmt->close();
+            return true;
+        } else {
+            // user not existed
+            $stmt->close();
+            return false;
+        }
+    }
+    public function isNumberExisted($mobile,$table) {
+        $stmt = $this->conn->prepare("SELECT phoneno from " .$table ." WHERE phoneno = ?");
+
+        $stmt->bind_param("s", $mobile);
 
         $stmt->execute();
 
@@ -178,6 +210,30 @@ class DB_Functions {
         $hash = base64_encode(sha1($password . $salt, true) . $salt);
 
         return $hash;
+    }
+
+    public function check_who_reffered($mobile,$table,$referral) {
+
+        $stmt = $this->conn->prepare("SELECT * FROM users WHERE refferal_code = ?");
+
+        $stmt->bind_param("s", $referral);
+
+        $stmt->execute();
+        
+
+        $referral = $stmt->get_result()->fetch_assoc();
+
+        if ($referral) {
+            // referral found
+            $stmt->close();
+            return $referral;
+        } else {
+            // referral not found
+            $stmt->close();
+            return false;
+        }
+
+
     }
 
 }

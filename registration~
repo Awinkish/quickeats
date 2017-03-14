@@ -25,11 +25,9 @@ if (isset($_POST['fname']) && isset($_POST['sname']) && isset($_POST['email']) &
         $reff = $db->check_who_reffered("users", "refferal_code", $referral);
 
             if ($reff == false) {
-               //echo 'No user with given refferal code exist <br>';
+               echo 'No user with given refferal code exist <br>';
             } else {
-               //echo "You were reffered by ". $reff["email"];
-
-               $userid = $reff["userid"];
+               echo "You were reffered by ". $reff["email"];
 
             }
 
@@ -60,7 +58,7 @@ if (isset($_POST['fname']) && isset($_POST['sname']) && isset($_POST['email']) &
     } 
      else {
         // create a new user
-        $user = $db->storeUser($fname, $sname, $refferalcode, $mobile, $email, $password, $userid);
+        $user = $db->storeUser($fname, $sname, $refferalcode, $mobile, $email, $password);
         if ($user) {
             // user stored successfully
             $response["error"] = FALSE;
@@ -88,6 +86,7 @@ if (isset($_POST['fname']) && isset($_POST['sname']) && isset($_POST['email']) &
 }
 
 ?>
+
 
 
 
