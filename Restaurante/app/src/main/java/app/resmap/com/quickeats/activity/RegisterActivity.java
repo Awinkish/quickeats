@@ -43,14 +43,14 @@ public class RegisterActivity extends Activity {
     private Button btnLinkToLogin;
     private EditText firstName, secondName, inputEmail, inputPassword, inputMobile, inputPasswordConfirm
             , firstNameAgent, secondNameAgent, inputEmailAgent, inputMobileAgent, inputPasswordAgent,
-            inputPasswordConfirmAgent, referralCode;
+            inputPasswordConfirmAgent, referralCode, location, location_agent;
     private ProgressDialog pDialog;
     private SessionManager session;
     private SQLiteHandler db;
     boolean userLogin = true;
     LinearLayout userLayout, agentLayout;
     Validate validate;
-
+    GPSTracker gps;
 
 
     @Override
@@ -66,6 +66,7 @@ public class RegisterActivity extends Activity {
         inputMobile = (EditText) findViewById(R.id.mobile);
         inputPassword = (EditText) findViewById(R.id.password);
         inputPasswordConfirm = (EditText) findViewById(R.id.passwordConfirm);
+        location = (EditText) findViewById(R.id.location);
 
         // Agents fields
         firstNameAgent = (EditText) findViewById(R.id.firstNameAgent);
@@ -74,6 +75,7 @@ public class RegisterActivity extends Activity {
         inputMobileAgent = (EditText) findViewById(R.id.mobileAgent);
         inputPasswordAgent = (EditText) findViewById(R.id.passwordAgent);
         inputPasswordConfirmAgent = (EditText) findViewById(R.id.passwordConfirmAgent);
+        location_agent = (EditText) findViewById(R.id.location2);
 
         userLayout = (LinearLayout) findViewById(R.id.user);
         agentLayout = (LinearLayout) findViewById(R.id.agent);
@@ -87,6 +89,11 @@ public class RegisterActivity extends Activity {
 
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
+
+        gps = new GPSTracker(this);
+        if(gps.canGetLocation()){
+            //Toast.makeText(getApplicationContext(), "Location loaded", Toast.LENGTH_LONG).show();
+        }
 
         session = new SessionManager(getApplicationContext());
 
@@ -245,6 +252,9 @@ public class RegisterActivity extends Activity {
                 params.put("mobile", mobile);
                 params.put("email", email);
                 params.put("password", password);
+                params.put("address", location.getText().toString());
+                params.put("lat", gps.getLatitude() + "");
+                params.put("lng", gps.getLongitude() + "");
 
                 return params;
             }
@@ -334,6 +344,9 @@ public class RegisterActivity extends Activity {
                 params.put("mobile", mobile);
                 params.put("email", email);
                 params.put("password", password);
+                params.put("address", location.getText().toString());
+                params.put("lat", gps.getLatitude() + "");
+                params.put("lng", gps.getLongitude() + "");
 
                 return params;
             }
@@ -468,9 +481,6 @@ public class RegisterActivity extends Activity {
 
         MUtils.showProgressDialog(pDialog);
 
-        final EditText location = (EditText) findViewById(R.id.location);
-        final EditText location_agent = (EditText) findViewById(R.id.location2);
-
         GPSTracker gps = new GPSTracker(this);
         if(gps.canGetLocation()){
             location.setFocusable(false);
@@ -487,22 +497,25 @@ public class RegisterActivity extends Activity {
             @Override
             public void onResponse(JSONObject response) {
 
-                if(MUtils.isNetworkConnected(getApplicationContext())){
-                    MUtils.showProgressDialog(pDialog);
-                }else{
-                    MUtils.showProgressDialog(pDialog);
-                    Toast.makeText(getApplicationContext(), "No network connection", Toast.LENGTH_LONG).show();
-                }
+
 
                 try {
-                    // Parsing json object response
-                    // response will be a json object
-                    String address = response.getJSONArray("results").getJSONObject(0).getString("formatted_address");
 
-                    MUtils.hideProgressDialog(pDialog);
+                    if(MUtils.isNetworkConnected(getApplicationContext())){
+                        // Parsing json object response
+                        // response will be a json object
+                        String address = response.getJSONArray("results").getJSONObject(0).getString("formatted_address");
 
-                    location.setText(address);
-                    location_agent.setText(address);
+                        location.setText(address);
+                        location_agent.setText(address);
+                        MUtils.hideProgressDialog(pDialog);
+                    }else{
+                        MUtils.hideProgressDialog(pDialog);
+                        Toast.makeText(getApplicationContext(), "No network connection", Toast.LENGTH_LONG).show();
+                        location.setText("");
+                        location_agent.setText("");
+                    }
+
 
 
                 } catch (JSONException e) {
