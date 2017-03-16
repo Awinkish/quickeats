@@ -20,5 +20,6 @@
     <string name="referral_optional">Referral Code (Optional)</string>
     <string name="hint_email_only">Email</string>
     <string name="hint_password_confirm">Confirm password</string>
+    <string name="location">Get my location</string>
 
 </resources>

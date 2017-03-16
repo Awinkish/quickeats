@@ -1,22 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@drawable/main"
+    android:elevation="1dp"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="2dp"
-    android:background="@drawable/delivery">
+    android:weightSum="1">
+
+    <TextView
+        android:id="@+id/textView"
+        style="@android:style/Widget.DeviceDefault.TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="cursive"
+        android:freezesText="false"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="Welcome to Quickeats"
+        android:textAllCaps="false"
+        android:textAppearance="@android:style/TextAppearance.Holo.Widget.ActionBar.Title"
+        android:textSize="40dp"
+        android:textStyle="bold"
+        android:typeface="sans"
+        android:visibility="visible" />
 
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/frame">
+        android:background="@android:color/transparent">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/logo"
-            android:padding="10dp" />
+            android:background="@color/logo_bg"
+            android:padding="10dp"
+            android:src="@drawable/logo" />
 
     </FrameLayout>
 
@@ -24,13 +44,13 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:background="@color/bg_register"
         android:orientation="horizontal"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:layout_marginBottom="5dp">
+        android:paddingRight="10dp">
 
-        <info.hoang8f.android.segmented.SegmentedGroup
-            xmlns:segmentedgroup="http://schemas.android.com/apk/res-auto"
+        <info.hoang8f.android.segmented.SegmentedGroup xmlns:segmentedgroup="http://schemas.android.com/apk/res-auto"
             android:id="@+id/segmented2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,35 +62,37 @@
             <RadioButton
                 android:id="@+id/button21"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="User"
-                android:textColor="@color/white"
+                android:layout_weight="1"
+
+                android:background="@color/btn_logut_bg"
                 android:onClick="user"
-                style="@style/RadioButton"
-                android:background="@color/btn_login" />
+                android:text="User"
+                android:textColor="@color/white" />
 
             <RadioButton
                 android:id="@+id/button22"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Agent"
+
+                android:foreground="@color/btn_login_bg"
                 android:onClick="agent"
+                android:text="Agent"
                 android:textColor="@color/white"
-                style="@style/RadioButton" />
+                android:textColorLink="@color/input_login" />
         </info.hoang8f.android.segmented.SegmentedGroup>
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/agent"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical"
         android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:id="@+id/agent">
+        android:paddingRight="20dp">
 
         <EditText
             android:id="@+id/email_agent"
@@ -106,21 +128,21 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dip"
-            android:background="@color/btn_login_bg"
+            android:background="@color/btn_login"
             android:text="@string/btn_login"
             android:textColor="@color/bg_register" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/user"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
-        android:visibility="gone"
-        android:id="@+id/user">
+        android:visibility="gone">
 
         <EditText
             android:id="@+id/email"
@@ -154,7 +176,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dip"
-            android:background="@color/btn_login_bg"
+            android:background="@color/btn_login"
             android:text="@string/btn_login"
             android:textColor="@color/bg_register" />
 
@@ -171,7 +193,8 @@
         android:background="@null"
         android:text="@string/btn_link_to_register"
         android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="15dp" />
+        android:textColor="@android:color/black"
+        android:textSize="15dp"
+        android:layout_weight="0.03" />
 
 </LinearLayout>

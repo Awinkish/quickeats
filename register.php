@@ -20,27 +20,6 @@ if (isset($_POST['fname']) && isset($_POST['sname']) && isset($_POST['email']) &
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    if ($referral != "NULL") {
-
-        $reff = $db->check_who_reffered("users", "refferal_code", $referral);
-
-            if ($reff == false) {
-               //echo 'No user with given refferal code exist <br>';
-            } else {
-               //echo "You were reffered by ". $reff["email"];
-
-               $userid = $reff["userid"];
-
-            }
-
-    } else {
-
-        //echo "empty referal code <br>";
-        $reff = "";
-   
-    
-    }
-
     // give the new user a referral code
 
     $refferalcode = substr(sha1(rand(100 * gettimeofday()['sec'], 500)), 0, 10);
@@ -51,35 +30,54 @@ if (isset($_POST['fname']) && isset($_POST['sname']) && isset($_POST['email']) &
         $response["error"] = TRUE;
         $response["error_msg"] = "User already existed with " . $email;
         echo json_encode($response);
-    }else{
-     if ($db->isNumberExisted($mobile,'users')) {
+    }else if ($db->isNumberExisted($mobile,'users')) {
         // user already existed
         $response["error"] = TRUE;
         $response["error_msg"] = "User already existed with " . $mobile;
         echo json_encode($response);
-    } 
-     else {
-        // create a new user
-        $user = $db->storeUser($fname, $sname, $refferalcode, $mobile, $email, $password, $userid);
-        if ($user) {
-            // user stored successfully
-            $response["error"] = FALSE;
-            $response["uid"] = $user["unique_id"];
-            $response["user"]["fname"] = $user["firstname"];
-            $response["user"]["sname"] = $user["lastname"];
-            $response["user"]["mobile"] = $user["phoneno"];
-            $response["user"]["email"] = $user["email"];
-            $response["user"]["created_at"] = $user["created_at"];
-            $response["user"]["updated_at"] = $user["updated_at"];
-            echo json_encode($response);
+    } else {
+
+        if ($referral != "NULL") {
+
+        $reff = $db->check_who_reffered("users", "refferal_code", $referral);
+
+            if ($reff == false) {
+               //echo 'No user with given refferal code exist <br>';
+            } else {
+
+               $userid = $reff["userid"];
+
+               // create a new user
+               $user = $db->storeUser($fname, $sname, $refferalcode, $mobile, $email, $password, $userid);
+                if ($user) {
+                    // user stored successfully
+                    $response["error"] = FALSE;
+                    $response["uid"] = $user["unique_id"];
+                    $response["user"]["fname"] = $user["firstname"];
+                    $response["user"]["sname"] = $user["lastname"];
+                    $response["user"]["mobile"] = $user["phoneno"];
+                    $response["user"]["email"] = $user["email"];
+                    $response["user"]["created_at"] = $user["created_at"];
+                    $response["user"]["updated_at"] = $user["updated_at"];
+                    echo json_encode($response);
+                } else {
+                    // user failed to store
+                    $response["error"] = TRUE;
+                    $response["error_msg"] = "Unknown error occurred in registration!";
+                    echo json_encode($response);
+                }
+
+            }
+
         } else {
-            // user failed to store
-            $response["error"] = TRUE;
-            $response["error_msg"] = "Unknown error occurred in registration!";
-            echo json_encode($response);
+
+            $reff = "";
+    
         }
-        }
+        
     }
+
+}
    
 } else {
     $response["error"] = TRUE;

@@ -16,19 +16,43 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="10dp"
             android:text="@string/welcome"
-            android:textSize="20dp" />
+            android:textColor="@color/lbl_name"
+            android:textSize="24dp" />
 
         <TextView
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:textColor="@color/lbl_name"
-            android:textSize="24dp" />
+            android:textSize="13dp" />
+
+        <TextView
+            android:id="@+id/lname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13dp" />
+
+        <TextView
+            android:id="@+id/referral"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13dp" />
+
+        <TextView
+            android:id="@+id/phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13dp" />
 
         <TextView
             android:id="@+id/email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13dp" />
+
+        <TextView
+            android:id="@+id/address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="13dp" />
@@ -39,10 +63,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dip"
             android:background="@color/btn_logut_bg"
-            android:text="@string/btn_logout"
+            android:text="Log out"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="15dp" />
+
     </LinearLayout>
 
 </RelativeLayout>

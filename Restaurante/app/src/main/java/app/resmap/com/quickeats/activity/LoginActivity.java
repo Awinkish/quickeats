@@ -3,17 +3,16 @@ package app.resmap.com.quickeats.activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -27,9 +26,10 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.jar.Manifest;
 
 import app.resmap.com.quickeats.R;
-import app.resmap.com.quickeats.app.*;
+import app.resmap.com.quickeats.app.AppConfig;
 import app.resmap.com.quickeats.app.AppController;
 import app.resmap.com.quickeats.helper.SQLiteHandler;
 import app.resmap.com.quickeats.helper.SessionManager;
@@ -72,14 +72,14 @@ public class LoginActivity extends Activity {
 
         Bundle extras = getIntent().getExtras();
 
-        if(extras != null){
-            tab = extras.getString("tab");
-            if (tab.equals("user") )
-                segmented3.check(R.id.button21);
-                else segmented3.check(R.id.button22);
-        }else {
-            segmented3.check(R.id.button21);
-        }
+//        if (extras != null) {
+//            tab = extras.getString("tab");
+//            if (tab.equals("user"))
+//                segmented3.check(R.id.button21);
+//            else segmented3.check(R.id.button22);
+//        } else {
+//            segmented3.check(R.id.button21);
+//        }
 
         //logoRounded();
 
@@ -183,12 +183,16 @@ public class LoginActivity extends Activity {
                         String uid = jObj.getString("uid");
 
                         JSONObject user = jObj.getJSONObject("user");
-                        String name = user.getString("fname");
+                        String fname = user.getString("fname");
+                        String sname = user.getString("fname");
+                        String phone = user.getString("fname");
+                        String discounts = user.getString("fname");
+                        String referral = user.getString("fname");
                         String email = user.getString("email");
                         String created_at = user
                                 .getString("created_at");
 
-                        db.addUser(name, email, uid, created_at);
+                        db.addUser(fname, sname, phone, discounts, referral, email, uid, created_at);
 
                         Intent intent = new Intent(LoginActivity.this,
                                 MainActivity.class);

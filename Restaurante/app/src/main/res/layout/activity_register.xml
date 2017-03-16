@@ -22,17 +22,22 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
+            android:background="#9ae7c4c4"
+            android:fontFamily="sans-serif-smallcaps"
             android:gravity="center"
             android:padding="5dp"
             android:text="Register"
             android:textColor="@color/btn_login"
-            android:textSize="25sp" />
+            android:textSize="35sp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
     </RelativeLayout>
 
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:background="#9ae7c4c4"
         android:orientation="horizontal"
         android:paddingLeft="10dp"
         android:paddingRight="10dp">
@@ -53,7 +58,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:onClick="user"
-                android:text="User" />
+                android:text="User"
+                android:textSize="20sp" />
 
             <RadioButton
                 android:id="@+id/button22"
@@ -62,7 +68,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:onClick="agent"
-                android:text="Agent" />
+                android:text="Agent"
+                android:textSize="20sp" />
         </info.hoang8f.android.segmented.SegmentedGroup>
 
     </LinearLayout>
@@ -145,6 +152,19 @@
             android:singleLine="true"
             android:textColor="@color/dark_text_input_fg"
             android:textColorHint="@color/input_register" />
+
+        <EditText
+            android:id="@+id/location"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:background="@color/dark_text_input_bg"
+            android:hint="@string/location"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:textColor="@color/dark_text_input_fg"
+            android:textColorHint="@color/input_register" />
+
 
         <EditText
             android:id="@+id/password"
@@ -230,6 +250,19 @@
             android:textColorHint="@color/input_register" />
 
         <EditText
+            android:id="@+id/location2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:background="@color/dark_text_input_bg"
+            android:hint="@string/location"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:textColor="@color/dark_text_input_fg"
+            android:textColorHint="@color/input_register" />
+
+
+        <EditText
             android:id="@+id/emailAgent"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -292,11 +325,12 @@
         android:layout_width="fill_parent"
         android:layout_height="27dp"
         android:layout_marginTop="10dip"
-        android:background="@null"
+        android:background="#97e1c8c8"
+        android:onClick="login"
         android:text="Already Registered ? Login Now ."
         android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="15dp"
-        android:onClick="login"/>
+        android:textColor="#170808"
+        android:textColorHint="#170808"
+        android:textSize="15dp" />
 
 </LinearLayout>

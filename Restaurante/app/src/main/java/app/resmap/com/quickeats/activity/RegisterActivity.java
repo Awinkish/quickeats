@@ -12,10 +12,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.android.volley.Request.Method;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,6 +30,8 @@ import java.util.Map;
 import app.resmap.com.quickeats.R;
 import app.resmap.com.quickeats.app.AppConfig;
 import app.resmap.com.quickeats.app.AppController;
+import app.resmap.com.quickeats.helper.GPSTracker;
+import app.resmap.com.quickeats.helper.MUtils;
 import app.resmap.com.quickeats.helper.SQLiteHandler;
 import app.resmap.com.quickeats.helper.SessionManager;
 import app.resmap.com.quickeats.models.Validate;
@@ -101,6 +107,8 @@ public class RegisterActivity extends Activity {
                 }
             }
         });
+
+        formattedAddress();
 
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -180,12 +188,16 @@ public class RegisterActivity extends Activity {
 
                         JSONObject user = jObj.getJSONObject("user");
                         String fname = user.getString("fname");
+                        String lname = user.getString("fname");
+                        String phone = user.getString("fname");
+                        String discounts = "None";
+                        String referral = user.getString("fname");
                         String email = user.getString("email");
                         String created_at = user
                                 .getString("created_at");
 
                         // Inserting row in users table
-                        db.addUser(fname, email, uid, created_at);
+                        db.addUser(fname, lname, phone, discounts, referral, email, uid, created_at);
 
                         Toast.makeText(getApplicationContext(), "User successfully registered. Try login now!", Toast.LENGTH_LONG).show();
 
@@ -269,13 +281,16 @@ public class RegisterActivity extends Activity {
 
                         JSONObject user = jObj.getJSONObject("user");
                         String fname = user.getString("fname");
-                        String sname = user.getString("sname");
-                        String mobile = user.getString("mobile");
+                        String sname = user.getString("fname");
+                        String phone = user.getString("fname");
+                        String discounts = "None";
+                        String referral = "None";
+                        String mobile = "None";
                         String email = user.getString("email");
                         String created_at = user
                                 .getString("created_at");
 
-                        db.addUser(fname, email, uid, created_at);
+                        db.addUser(fname, sname, phone, discounts, referral, email, uid, created_at);
 
                         Toast.makeText(getApplicationContext(), "User successfully registered. Try login now!", Toast.LENGTH_LONG).show();
 
@@ -444,5 +459,72 @@ public class RegisterActivity extends Activity {
 
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
+    }
+
+    private void formattedAddress(){
+        final ProgressDialog pDialog = new ProgressDialog(RegisterActivity.this);
+        pDialog.setMessage("Please Wait...");
+        pDialog.setCancelable(false);
+
+        MUtils.showProgressDialog(pDialog);
+
+        final EditText location = (EditText) findViewById(R.id.location);
+        final EditText location_agent = (EditText) findViewById(R.id.location2);
+
+        GPSTracker gps = new GPSTracker(this);
+        if(gps.canGetLocation()){
+            location.setFocusable(false);
+            //Toast.makeText(getApplicationContext(), "Location loaded", Toast.LENGTH_LONG).show();
+        }
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+
+        String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+gps.getLatitude()+","+gps.getLongitude()+"&key=AIzaSyBYffmc03xcmBX_hVl3wbh1FO8zcOHsMyE";
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
+                url, null, new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+
+                if(MUtils.isNetworkConnected(getApplicationContext())){
+                    MUtils.showProgressDialog(pDialog);
+                }else{
+                    MUtils.showProgressDialog(pDialog);
+                    Toast.makeText(getApplicationContext(), "No network connection", Toast.LENGTH_LONG).show();
+                }
+
+                try {
+                    // Parsing json object response
+                    // response will be a json object
+                    String address = response.getJSONArray("results").getJSONObject(0).getString("formatted_address");
+
+                    MUtils.hideProgressDialog(pDialog);
+
+                    location.setText(address);
+                    location_agent.setText(address);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(),
+                            "Error: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("Error", "Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(jsonObjReq);
+
     }
 }
