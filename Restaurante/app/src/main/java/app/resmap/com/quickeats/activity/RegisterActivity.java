@@ -14,12 +14,10 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Request.Method;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,7 +30,6 @@ import app.resmap.com.quickeats.app.AppConfig;
 import app.resmap.com.quickeats.app.AppController;
 import app.resmap.com.quickeats.helper.GPSTracker;
 import app.resmap.com.quickeats.helper.MUtils;
-import app.resmap.com.quickeats.helper.SQLiteHandler;
 import app.resmap.com.quickeats.helper.SessionManager;
 import app.resmap.com.quickeats.models.Validate;
 import info.hoang8f.android.segmented.SegmentedGroup;
@@ -46,7 +43,6 @@ public class RegisterActivity extends Activity {
             inputPasswordConfirmAgent, referralCode, location, location_agent;
     private ProgressDialog pDialog;
     private SessionManager session;
-    private SQLiteHandler db;
     boolean userLogin = true;
     LinearLayout userLayout, agentLayout;
     Validate validate;
@@ -90,14 +86,9 @@ public class RegisterActivity extends Activity {
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
 
-        gps = new GPSTracker(this);
-        if(gps.canGetLocation()){
-            //Toast.makeText(getApplicationContext(), "Location loaded", Toast.LENGTH_LONG).show();
-        }
+        formattedAddress();
 
         session = new SessionManager(getApplicationContext());
-
-        db = new SQLiteHandler(getApplicationContext());
 
         segmented3.check(R.id.button21);
 
@@ -117,42 +108,7 @@ public class RegisterActivity extends Activity {
 
         formattedAddress();
 
-
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                String referral = referralCode.getText().toString().trim();
-                String fName = firstName.getText().toString().trim();
-                String sName = secondName.getText().toString().trim();
-                String mobile = inputMobile.getText().toString().trim();
-                String email = inputEmail.getText().toString().trim();
-                String password = inputPassword.getText().toString().trim();
-                String passwordConfirm = inputPasswordConfirm.getText().toString().trim();
-
-                boolean checkPassword = validate.password(password, passwordConfirm);
-                boolean checkEmail = validate.email(email);
-
-                if(!checkPassword){
-                    Toast.makeText(getApplicationContext(), "Password mismatch", Toast.LENGTH_SHORT).show();
-                }else if(!checkEmail){
-                    Toast.makeText(getApplicationContext(), "Enter a valid email address", Toast.LENGTH_SHORT).show();
-                }else {
-
-                    if (!fName.isEmpty() && !sName.isEmpty() && !mobile.isEmpty() &&
-                            !email.isEmpty() && !password.isEmpty()) {
-
-                        if (referral.isEmpty()){
-                            referral = "NULL";
-                        }
-                        registerUser(fName, sName, email, mobile, password, referral);
-                    } else {
-                        Toast.makeText(getApplicationContext(),
-                                "Please enter your details here!", Toast.LENGTH_LONG)
-                                .show();
-                    }
-                }
-            }
-        });
-
+        register();
 
         if (session.isLoggedIn()) {
 
@@ -161,8 +117,6 @@ public class RegisterActivity extends Activity {
             startActivity(intent);
             finish();
         }
-
-
 
     }
 
@@ -202,9 +156,6 @@ public class RegisterActivity extends Activity {
                         String email = user.getString("email");
                         String created_at = user
                                 .getString("created_at");
-
-                        // Inserting row in users table
-                        db.addUser(fname, lname, phone, discounts, referral, email, uid, created_at);
 
                         Toast.makeText(getApplicationContext(), "User successfully registered. Try login now!", Toast.LENGTH_LONG).show();
 
@@ -288,19 +239,6 @@ public class RegisterActivity extends Activity {
 
                         // store in sqlite
                         String uid = jObj.getString("uid");
-
-                        JSONObject user = jObj.getJSONObject("user");
-                        String fname = user.getString("fname");
-                        String sname = user.getString("fname");
-                        String phone = user.getString("fname");
-                        String discounts = "None";
-                        String referral = "None";
-                        String mobile = "None";
-                        String email = user.getString("email");
-                        String created_at = user
-                                .getString("created_at");
-
-                        db.addUser(fname, sname, phone, discounts, referral, email, uid, created_at);
 
                         Toast.makeText(getApplicationContext(), "User successfully registered. Try login now!", Toast.LENGTH_LONG).show();
 
@@ -392,42 +330,7 @@ public class RegisterActivity extends Activity {
         // Choice between user and agent handled here
         if(userLogin){
 
-            btnRegister.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View view) {
-                    String referral = referralCode.getText().toString().trim();
-                    String fName = firstName.getText().toString().trim();
-                    String sName = secondName.getText().toString().trim();
-                    String mobile = inputMobile.getText().toString().trim();
-                    String email = inputEmail.getText().toString().trim();
-                    String password = inputPassword.getText().toString().trim();
-                    String passwordConfirm = inputPasswordConfirm.getText().toString().trim();
-
-                    boolean checkPassword = validate.password(password, passwordConfirm);
-                    boolean checkEmail = validate.email(email);
-
-                    if(!checkPassword){
-                        Toast.makeText(getApplicationContext(), "Password mismatch", Toast.LENGTH_SHORT).show();
-                    }else if(!checkEmail){
-                        Toast.makeText(getApplicationContext(), "Enter a valid email address", Toast.LENGTH_SHORT).show();
-                    }else {
-
-                        if (!fName.isEmpty() && !sName.isEmpty() && !mobile.isEmpty() &&
-                                !email.isEmpty() && !password.isEmpty()) {
-
-                            if (referral.isEmpty()){
-                                referral = "NULL";
-                            }
-                            registerUser(fName, sName, email, mobile, password, referral);
-                        } else {
-                            Toast.makeText(getApplicationContext(),
-                                    "Please enter your details here!", Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    }
-
-
-                }
-            });
+            register();
 
         } else {
 
@@ -454,7 +357,7 @@ public class RegisterActivity extends Activity {
                                 registerAgent(fName, sName, email, mobile, password);
                             } else {
                                 Toast.makeText(getApplicationContext(),
-                                        "Please enter your details!", Toast.LENGTH_LONG)
+                                        "Please enter your Account!", Toast.LENGTH_LONG)
                                         .show();
                             }
 
@@ -465,6 +368,46 @@ public class RegisterActivity extends Activity {
             });
 
         }
+    }
+
+    private void register() {
+
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                String referral = referralCode.getText().toString().trim();
+                String fName = firstName.getText().toString().trim();
+                String sName = secondName.getText().toString().trim();
+                String mobile = inputMobile.getText().toString().trim();
+                String email = inputEmail.getText().toString().trim();
+                String password = inputPassword.getText().toString().trim();
+                String passwordConfirm = inputPasswordConfirm.getText().toString().trim();
+
+                boolean checkPassword = validate.password(password, passwordConfirm);
+                boolean checkEmail = validate.email(email);
+
+                if(!checkPassword){
+                    Toast.makeText(getApplicationContext(), "Password mismatch", Toast.LENGTH_SHORT).show();
+                }else if(!checkEmail){
+                    Toast.makeText(getApplicationContext(), "Enter a valid email address", Toast.LENGTH_SHORT).show();
+                }else {
+
+                    if (!fName.isEmpty() && !sName.isEmpty() && !mobile.isEmpty() &&
+                            !email.isEmpty() && !password.isEmpty()) {
+
+                        if (referral.isEmpty()){
+                            referral = "NULL";
+                        }
+                        registerUser(fName, sName, email, mobile, password, referral);
+                    } else {
+                        Toast.makeText(getApplicationContext(),
+                                "Please enter your Account here!", Toast.LENGTH_LONG)
+                                .show();
+                    }
+                }
+
+
+            }
+        });
     }
 
 
@@ -479,15 +422,13 @@ public class RegisterActivity extends Activity {
         pDialog.setMessage("Please Wait...");
         pDialog.setCancelable(false);
 
-        MUtils.showProgressDialog(pDialog);
+        //MUtils.showProgressDialog(pDialog);
 
         GPSTracker gps = new GPSTracker(this);
         if(gps.canGetLocation()){
             location.setFocusable(false);
             //Toast.makeText(getApplicationContext(), "Location loaded", Toast.LENGTH_LONG).show();
         }
-
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
 
         String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+gps.getLatitude()+","+gps.getLongitude()+"&key=AIzaSyBYffmc03xcmBX_hVl3wbh1FO8zcOHsMyE";
 
@@ -508,9 +449,9 @@ public class RegisterActivity extends Activity {
 
                         location.setText(address);
                         location_agent.setText(address);
-                        MUtils.hideProgressDialog(pDialog);
+                        //MUtils.hideProgressDialog(pDialog);
                     }else{
-                        MUtils.hideProgressDialog(pDialog);
+                        //MUtils.hideProgressDialog(pDialog);
                         Toast.makeText(getApplicationContext(), "No network connection", Toast.LENGTH_LONG).show();
                         location.setText("");
                         location_agent.setText("");
@@ -520,9 +461,9 @@ public class RegisterActivity extends Activity {
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(),
-                            "Error: " + e.getMessage(),
-                            Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(),
+                            //"Error: " + e.getMessage(),
+                            //Toast.LENGTH_LONG).show();
                 }
             }
         }, new Response.ErrorListener() {
@@ -530,8 +471,8 @@ public class RegisterActivity extends Activity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("Error", "Error: " + error.getMessage());
-                Toast.makeText(getApplicationContext(),
-                        error.getMessage(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),
+                        //error.getMessage(), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -539,5 +480,16 @@ public class RegisterActivity extends Activity {
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(jsonObjReq);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        formattedAddress();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 }

@@ -14,4 +14,7 @@ public class AppConfig {
 	// Server register url agent
 	public static String URL_REGISTER_AGENT = "https://www.dawagitours.co.ke/quickeats/register_agent.php";
 
+	// Server update url
+	public static String URL_UPDATE = "https://www.dawagitours.co.ke/quickeats/account.php";
+
 }

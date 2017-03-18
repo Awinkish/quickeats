@@ -22,18 +22,14 @@ class DB_Functions {
      * Storing new user
      * returns user details
      */
-    public function storeUser($fname, $sname, $referral ,$mobile, $email, $password, $userid) {
+    public function storeUser($fname, $sname, $referral ,$mobile, $email, $password, $userid, $address, $latitude, $longitude) {
         $uuid = uniqid('', true);
         $hash = $this->hashSSHA($password);
         $encrypted_password = md5($password); // encrypted password
         $salt = $hash["salt"]; // salt
-        
-        if($referral != ""){
-           updateReferrer($referral);
-        }
 
-        $stmt = $this->conn->prepare("INSERT INTO users(unique_id, firstname, lastname, refferal_code, phoneno, email, password, salt, reffered_by, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-        $stmt->bind_param("sssssssss", $uuid, $fname, $sname, $referral ,$mobile, $email, $encrypted_password, $salt, $userid);
+        $stmt = $this->conn->prepare("INSERT INTO users(unique_id, firstname, lastname, refferal_code, phoneno, email, password, salt, reffered_by, formatted_address, address_lat, address_lng, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+        $stmt->bind_param("ssssssssssss", $uuid, $fname, $sname, $referral ,$mobile, $email, $encrypted_password, $salt, $userid, $address, $latitude, $longitude);
         $result = $stmt->execute();
         $stmt->close();
 
@@ -56,14 +52,14 @@ class DB_Functions {
      * returns agent details
      */
 
-    public function storeAgent($fname, $sname, $mobile, $email, $password) {
+    public function storeAgent($fname, $sname, $mobile, $email, $password, $address, $latitude, $longitude) {
         $uuid = uniqid('', true);
         $hash = $this->hashSSHA($password);
         $encrypted_password = md5($password); // encrypted password
         $salt = $hash["salt"]; // salt
 
-        $stmt = $this->conn->prepare("INSERT INTO delivery_agents(unique_id, firstname, lastname, phoneno, email, password, salt, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, NOW())");
-        $stmt->bind_param("sssssss", $uuid, $fname, $sname, $mobile, $email, $encrypted_password, $salt);
+        $stmt = $this->conn->prepare("INSERT INTO delivery_agents(unique_id, firstname, lastname, phoneno, email, password, salt, formatted_address, current_lat, current_long, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+        $stmt->bind_param("ssssssssss", $uuid, $fname, $sname, $mobile, $email, $encrypted_password, $salt, $address, $latitude, $longitude);
         $result = $stmt->execute();
         $stmt->close();
 
@@ -112,6 +108,29 @@ class DB_Functions {
         }
     }
 
+
+    public function getAccountDetails($email) {
+
+    
+        if (is_numeric($email) ) {
+            $stmt = $this->conn->prepare("SELECT * FROM users WHERE phoneno = ?");
+        }else{
+            $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
+        }
+        
+
+        $stmt->bind_param("s", $email);
+
+        if ($stmt->execute()) {
+            $user = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+
+            return $user;
+        } else {
+            return NULL;
+        }
+    }
+
     /**
      * Get agent by email and password
      */
@@ -136,12 +155,6 @@ class DB_Functions {
         } else {
             return NULL;
         }
-    }
-    
-    public function updateReferrer(){
-    
-
-
     }
 
     /**
@@ -212,7 +225,7 @@ class DB_Functions {
         return $hash;
     }
 
-    public function check_who_reffered($mobile,$table,$referral) {
+    public function check_who_reffered($referral) {
 
         $stmt = $this->conn->prepare("SELECT * FROM users WHERE refferal_code = ?");
 

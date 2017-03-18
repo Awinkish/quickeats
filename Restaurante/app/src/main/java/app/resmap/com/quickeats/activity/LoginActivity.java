@@ -2,13 +2,11 @@ package app.resmap.com.quickeats.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -26,12 +24,11 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.jar.Manifest;
 
 import app.resmap.com.quickeats.R;
+import app.resmap.com.quickeats.SharedPreference;
 import app.resmap.com.quickeats.app.AppConfig;
 import app.resmap.com.quickeats.app.AppController;
-import app.resmap.com.quickeats.helper.SQLiteHandler;
 import app.resmap.com.quickeats.helper.SessionManager;
 import info.hoang8f.android.segmented.SegmentedGroup;
 
@@ -45,8 +42,9 @@ public class LoginActivity extends Activity {
     private EditText inputPassword, inputEmailAgent, inputPasswordAgent;
     private ProgressDialog pDialog;
     private SessionManager session;
-    private SQLiteHandler db;
     boolean userLogin;
+
+    public static final String ACCOUNT_PREFERENCES = "AccPrefs";
     String tab;
 
     LinearLayout agentLayout, userLayout;
@@ -101,9 +99,6 @@ public class LoginActivity extends Activity {
 
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
-
-
-        db = new SQLiteHandler(getApplicationContext());
 
         // Session manager
         session = new SessionManager(getApplicationContext());
@@ -186,13 +181,16 @@ public class LoginActivity extends Activity {
                         String fname = user.getString("fname");
                         String sname = user.getString("fname");
                         String phone = user.getString("fname");
-                        String discounts = user.getString("fname");
-                        String referral = user.getString("fname");
                         String email = user.getString("email");
                         String created_at = user
                                 .getString("created_at");
+                        String password = "123456";
 
-                        db.addUser(fname, sname, phone, discounts, referral, email, uid, created_at);
+                        SharedPreferences sharedpreferences = getSharedPreferences(ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedpreferences.edit();
+                        editor.putString("email", email);
+                        editor.apply();
+
 
                         Intent intent = new Intent(LoginActivity.this,
                                 MainActivity.class);

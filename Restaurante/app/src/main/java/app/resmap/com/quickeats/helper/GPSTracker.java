@@ -17,6 +17,8 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 
+import app.resmap.com.quickeats.activity.RegisterActivity;
+
 public class GPSTracker extends Service implements LocationListener {
 
     private final Context mContext;
@@ -44,6 +46,7 @@ public class GPSTracker extends Service implements LocationListener {
     protected LocationManager locationManager;
 
     public GPSTracker(Context context) {
+
         this.mContext = context;
         getLocation();
     }
@@ -62,8 +65,11 @@ public class GPSTracker extends Service implements LocationListener {
                     .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             if (!isGPSEnabled && !isNetworkEnabled) {
+
+                showSettingsAlert();
                 // no network provider is enabled
             } else {
+
                 this.canGetLocation = true;
                 // First get location from Network Provider
                 if (isNetworkEnabled) {
@@ -98,6 +104,8 @@ public class GPSTracker extends Service implements LocationListener {
                             }
                         }
                     }
+                }else {
+
                 }
             }
 
