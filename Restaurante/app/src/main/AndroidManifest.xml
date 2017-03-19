@@ -12,6 +12,10 @@
         android:icon="@mipmap/ic_quickeats"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCMpU6Kb5V08TkzSPyeKziJEk4RcQaFlnY" />
         <activity
             android:name=".activity.LoginActivity"
             android:label="@string/app_name"

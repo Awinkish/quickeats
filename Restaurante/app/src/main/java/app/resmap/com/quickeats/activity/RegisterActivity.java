@@ -12,12 +12,15 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.Request.Method;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,8 +31,6 @@ import java.util.Map;
 import app.resmap.com.quickeats.R;
 import app.resmap.com.quickeats.app.AppConfig;
 import app.resmap.com.quickeats.app.AppController;
-import app.resmap.com.quickeats.helper.GPSTracker;
-import app.resmap.com.quickeats.helper.MUtils;
 import app.resmap.com.quickeats.helper.SessionManager;
 import app.resmap.com.quickeats.models.Validate;
 import info.hoang8f.android.segmented.SegmentedGroup;
@@ -40,14 +41,13 @@ public class RegisterActivity extends Activity {
     private Button btnLinkToLogin;
     private EditText firstName, secondName, inputEmail, inputPassword, inputMobile, inputPasswordConfirm
             , firstNameAgent, secondNameAgent, inputEmailAgent, inputMobileAgent, inputPasswordAgent,
-            inputPasswordConfirmAgent, referralCode, location, location_agent;
+            inputPasswordConfirmAgent, referralCode, location_agent;
     private ProgressDialog pDialog;
     private SessionManager session;
+    private String location;
     boolean userLogin = true;
     LinearLayout userLayout, agentLayout;
     Validate validate;
-    GPSTracker gps;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,7 @@ public class RegisterActivity extends Activity {
         inputMobile = (EditText) findViewById(R.id.mobile);
         inputPassword = (EditText) findViewById(R.id.password);
         inputPasswordConfirm = (EditText) findViewById(R.id.passwordConfirm);
-        location = (EditText) findViewById(R.id.location);
+        //location = (EditText) findViewById(R.id.location);
 
         // Agents fields
         firstNameAgent = (EditText) findViewById(R.id.firstNameAgent);
@@ -86,8 +86,6 @@ public class RegisterActivity extends Activity {
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
 
-        formattedAddress();
-
         session = new SessionManager(getApplicationContext());
 
         segmented3.check(R.id.button21);
@@ -105,9 +103,6 @@ public class RegisterActivity extends Activity {
                 }
             }
         });
-
-        formattedAddress();
-
         register();
 
         if (session.isLoggedIn()) {
@@ -203,9 +198,9 @@ public class RegisterActivity extends Activity {
                 params.put("mobile", mobile);
                 params.put("email", email);
                 params.put("password", password);
-                params.put("address", location.getText().toString());
-                params.put("lat", gps.getLatitude() + "");
-                params.put("lng", gps.getLongitude() + "");
+                params.put("address", "");
+                params.put("lat", "");
+                params.put("lng", "");
 
                 return params;
             }
@@ -282,9 +277,9 @@ public class RegisterActivity extends Activity {
                 params.put("mobile", mobile);
                 params.put("email", email);
                 params.put("password", password);
-                params.put("address", location.getText().toString());
-                params.put("lat", gps.getLatitude() + "");
-                params.put("lng", gps.getLongitude() + "");
+                params.put("address", "");
+                params.put("lat", "");
+                params.put("lng", "");
 
                 return params;
             }
@@ -417,79 +412,45 @@ public class RegisterActivity extends Activity {
         startActivity(intent);
     }
 
-    private void formattedAddress(){
-        final ProgressDialog pDialog = new ProgressDialog(RegisterActivity.this);
-        pDialog.setMessage("Please Wait...");
-        pDialog.setCancelable(false);
-
-        //MUtils.showProgressDialog(pDialog);
-
-        GPSTracker gps = new GPSTracker(this);
-        if(gps.canGetLocation()){
-            location.setFocusable(false);
-            //Toast.makeText(getApplicationContext(), "Location loaded", Toast.LENGTH_LONG).show();
-        }
-
-        String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+gps.getLatitude()+","+gps.getLongitude()+"&key=AIzaSyBYffmc03xcmBX_hVl3wbh1FO8zcOHsMyE";
-
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
-                url, null, new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-
-
-
-                try {
-
-                    if(MUtils.isNetworkConnected(getApplicationContext())){
-                        // Parsing json object response
-                        // response will be a json object
-                        String address = response.getJSONArray("results").getJSONObject(0).getString("formatted_address");
-
-                        location.setText(address);
-                        location_agent.setText(address);
-                        //MUtils.hideProgressDialog(pDialog);
-                    }else{
-                        //MUtils.hideProgressDialog(pDialog);
-                        Toast.makeText(getApplicationContext(), "No network connection", Toast.LENGTH_LONG).show();
-                        location.setText("");
-                        location_agent.setText("");
-                    }
-
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    //Toast.makeText(getApplicationContext(),
-                            //"Error: " + e.getMessage(),
-                            //Toast.LENGTH_LONG).show();
-                }
-            }
-        }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Error", "Error: " + error.getMessage());
-                //Toast.makeText(getApplicationContext(),
-                        //error.getMessage(), Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-        // Adding request to request queue
-        AppController.getInstance().addToRequestQueue(jsonObjReq);
-
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        formattedAddress();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    public void locate() {
+
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ADDRESS)
+                .build();
+        autocompleteFragment.setFilter(typeFilter);
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.i(TAG, "Place: " + place.getName());
+
+                location = place.getName().toString();
+
+                Toast.makeText(getApplicationContext(), place.getName(), Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i(TAG, "An error occurred: " + status);
+            }
+        });
+
     }
 }

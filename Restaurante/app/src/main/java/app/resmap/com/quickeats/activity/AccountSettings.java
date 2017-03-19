@@ -50,8 +50,9 @@ public class AccountSettings extends AppCompatActivity implements View.OnClickLi
     private ProgressDialog pDialog;
     private Button btnToolBar;
     SharedPreference shared;
+    boolean update = false;
 
-    String fname, sname, email, mobile, password, new_password = "",email_check;
+    String fname, sname, email, mobile, password,email_check;
 
     public static final String PREFS_FIRST_NAME = "fname";
     public static final String PREFS_FIRST = "firstname";
@@ -140,6 +141,8 @@ public class AccountSettings extends AppCompatActivity implements View.OnClickLi
 
     public void update(MenuItem item) {
 
+        update = true;
+
         shared = new SharedPreference();
 
         fname = shared.getValue(getApplicationContext(), PREFS_FIRST_NAME, PREFS_FIRST);
@@ -149,6 +152,8 @@ public class AccountSettings extends AppCompatActivity implements View.OnClickLi
         password = shared.getValue(getApplicationContext(), PREFS_PASSWORD_NAME, PREFS_PASSWORD);
 
         checkUser(email, fname, sname, mobile, password);
+
+
     }
 
     /**
@@ -222,15 +227,28 @@ public class AccountSettings extends AppCompatActivity implements View.OnClickLi
     }
 
     private void checkUser(final String emailVerify, final String firstname, final String lastname,
-                           final String phone, final String pass) {
+                           final String phone, String pass) {
+
+        if(pass.equals("") || pass == null){
+            pass = "empty";
+        }
         // Tag used to cancel the request
         String tag_string_req = "req_login";
 
-        pDialog.setMessage("Loading Account Information ...");
+        String url;
+
+        if(update){
+            url = AppConfig.URL_UPDATE;
+            pDialog.setMessage("Updating information ...");
+        }
+        else {
+            url = AppConfig.URL_ACCOUNT;
+            pDialog.setMessage("Loading information ...");
+        }
         showDialog();
 
-        String url = AppConfig.URL_UPDATE;
 
+        final String finalPass = pass;
         StringRequest strReq = new StringRequest(Request.Method.POST,
                 url, new Response.Listener<String>() {
 
@@ -254,12 +272,32 @@ public class AccountSettings extends AppCompatActivity implements View.OnClickLi
                         String sname = user.getString("sname");
                         String mobile = user.getString("phone");
                         String email = user.getString("email");
-                        String password = user.getString("password");
+                        String success = user.getString("success");
                         String created_at = user
                                 .getString("created_at");
 
+                        // Store user information temporarily
+
+                        initialize();
+
+                        shared = new SharedPreference();
+
+                        shared.save(getApplicationContext(), AccountSettings.PREFS_FIRST_NAME,
+                                AccountSettings.PREFS_FIRST, fname);
+
+                        shared.save(getApplicationContext(), AccountSettings.PREFS_LAST_NAME,
+                                AccountSettings.PREFS_LAST, sname);
+
+                        shared.save(getApplicationContext(), AccountSettings.PREFS_MOBILE_NAME,
+                                AccountSettings.PREFS_MOBILE, mobile);
+
+                        shared.save(getApplicationContext(), AccountSettings.PREFS_EMAIL_NAME,
+                                AccountSettings.PREFS_EMAIL, email);
+
                         loadData(fname, sname, mobile, email, "*********", "Enter new password");
 
+                        Toast.makeText(getApplicationContext(),
+                                success, Toast.LENGTH_LONG).show();
 
                     } else {
 
@@ -287,13 +325,20 @@ public class AccountSettings extends AppCompatActivity implements View.OnClickLi
 
             @Override
             protected Map<String, String> getParams() {
+
+                SharedPreferences sharedpreferences = getSharedPreferences(LoginActivity.ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
+                String email_old = sharedpreferences.getString("email", null);
+                String mobile_old = sharedpreferences.getString("mobile", null);
+
                 // Posting parameters to login url
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("fname", firstname);
                 params.put("sname", lastname);
                 params.put("email", emailVerify);
+                params.put("email_old", email_old);
+                params.put("mobile_old", mobile_old);
                 params.put("mobile", phone);
-                params.put("password", pass);
+                params.put("password", finalPass);
 
                 return params;
             }

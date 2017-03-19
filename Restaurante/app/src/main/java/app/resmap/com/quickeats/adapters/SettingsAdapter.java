@@ -120,7 +120,7 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyView
 
     }
 
-    private String showPasswordAlert(final MyViewHolder holder, String prefName, String prefValue){
+    private String showPasswordAlert(final MyViewHolder holder, final String prefName, final String prefValue){
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
 
@@ -144,6 +144,9 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.MyView
                     Toast.makeText(mContext, "Password mismatch", Toast.LENGTH_SHORT).show();
                 }else {
                     password = editPass.getText().toString();
+
+                    sharedPreference.removeValue(mContext, prefName, prefValue);
+                    sharedPreference.save(mContext, prefName, prefValue, password);
 
                     holder.editValue.setText(password);
                 }

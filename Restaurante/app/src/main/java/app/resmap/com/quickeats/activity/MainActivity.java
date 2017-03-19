@@ -78,14 +78,15 @@ public class MainActivity extends AppCompatActivity{
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
-		Intent intent = new Intent(getApplicationContext(), AccountSettings.class);
+		Intent intent;
 		switch (item.getItemId()) {
 			// action with ID action_refresh was selected
 			case R.id.action_accounts:
-
+				intent = new Intent(getApplicationContext(), AccountSettings.class);
 				startActivity(intent);
 				break;
 			case R.id.action_book:
+				intent = new Intent(getApplicationContext(), AddressBook.class);
 				startActivity(intent);
 				break;
 			case R.id.action_logout:

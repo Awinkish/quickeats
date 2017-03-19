@@ -9,7 +9,6 @@
     android:orientation="vertical"
     android:screenOrientation="portrait">
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -85,6 +84,14 @@
         android:paddingLeft="20dp"
         android:paddingRight="20dp">
 
+        <fragment
+            android:id="@+id/place_autocomplete_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/dark_text_input_bg"
+            android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+            tools:layout="?android:attr/preferenceLayoutChild" />
+
         <EditText
             android:id="@+id/referralCode"
             android:layout_width="fill_parent"
@@ -150,18 +157,6 @@
             android:background="@color/dark_text_input_bg"
             android:hint="@string/hint_mobile"
             android:inputType="numberDecimal"
-            android:padding="5dp"
-            android:singleLine="true"
-            android:textColor="@color/dark_text_input_fg"
-            android:textColorHint="@color/input_register" />
-
-        <EditText
-            android:id="@+id/location"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:background="@color/dark_text_input_bg"
-            android:hint="@string/location"
             android:padding="5dp"
             android:singleLine="true"
             android:textColor="@color/dark_text_input_fg"

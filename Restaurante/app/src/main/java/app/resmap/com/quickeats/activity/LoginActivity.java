@@ -178,17 +178,15 @@ public class LoginActivity extends Activity {
                         String uid = jObj.getString("uid");
 
                         JSONObject user = jObj.getJSONObject("user");
-                        String fname = user.getString("fname");
-                        String sname = user.getString("fname");
-                        String phone = user.getString("fname");
+                        String phone = user.getString("mobile");
                         String email = user.getString("email");
                         String created_at = user
                                 .getString("created_at");
-                        String password = "123456";
 
                         SharedPreferences sharedpreferences = getSharedPreferences(ACCOUNT_PREFERENCES, Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedpreferences.edit();
                         editor.putString("email", email);
+                        editor.putString("mobile", phone);
                         editor.apply();
 
 

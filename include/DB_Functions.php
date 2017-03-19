@@ -108,29 +108,6 @@ class DB_Functions {
         }
     }
 
-
-    public function getAccountDetails($email) {
-
-    
-        if (is_numeric($email) ) {
-            $stmt = $this->conn->prepare("SELECT * FROM users WHERE phoneno = ?");
-        }else{
-            $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
-        }
-        
-
-        $stmt->bind_param("s", $email);
-
-        if ($stmt->execute()) {
-            $user = $stmt->get_result()->fetch_assoc();
-            $stmt->close();
-
-            return $user;
-        } else {
-            return NULL;
-        }
-    }
-
     /**
      * Get agent by email and password
      */
@@ -247,6 +224,22 @@ class DB_Functions {
         }
 
 
+    }
+
+   public function getAccountDetails($email) {
+       
+        $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
+
+        $stmt->bind_param("s", $email);
+
+        if ($stmt->execute()) {
+            $user = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+
+            return $user;
+        } else {
+            return NULL;
+        }
     }
 
 }

@@ -33,28 +33,12 @@ if (isset($_POST['fname']) && isset($_POST['sname']) && isset($_POST['email']) &
         echo json_encode($response);
     } else {
 
-            if ($referral != "NULL") {
+        if($password == "empty"){
+            $user = $db->updateExclusive($fname, $sname, $mobile, $email);
+        }
 
-                $reff = $db->check_who_reffered($referral);
-
-                $userid = $reff["userid"]; 
-
-                $user = $db->updateEntity($fname, $sname, $refferalcode, $mobile, $email, $password, $userid);
-
-                if ($reff == false) {
-                   //echo 'No user with given refferal code exist <br>';
-                } else {
-
-                }
-
-            } else {
-
-                $userid = 0; 
-
-                $user = $db->updateEntity($fname, $sname, $refferalcode, $mobile, $email, $password, $userid);
+        $user = $db->updateEntity($fname, $sname, $mobile, $email, $password);
         
-            }
-            
             if ($user) {
                 // user stored successfully
                 $response["error"] = FALSE;
@@ -74,11 +58,11 @@ if (isset($_POST['fname']) && isset($_POST['sname']) && isset($_POST['email']) &
             }
             
         
-        }
+    }
    
 } else {
     $response["error"] = TRUE;
-    $response["error_msg"] = "Required parameters (name, email or password) is missing!";
+    $response["error_msg"] = "Required parameters are missing!";
     echo json_encode($response);
 }
 
