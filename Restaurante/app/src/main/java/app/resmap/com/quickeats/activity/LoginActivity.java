@@ -187,6 +187,7 @@ public class LoginActivity extends Activity {
                         SharedPreferences.Editor editor = sharedpreferences.edit();
                         editor.putString("email", email);
                         editor.putString("mobile", phone);
+                        editor.putString("uid", uid);
                         editor.apply();
 
 

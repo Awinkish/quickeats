@@ -76,6 +76,8 @@ public class RegisterActivity extends Activity {
         userLayout = (LinearLayout) findViewById(R.id.user);
         agentLayout = (LinearLayout) findViewById(R.id.agent);
 
+        locate();
+
         SegmentedGroup segmented3 = (SegmentedGroup) findViewById(R.id.segmented2);
         segmented3.setTintColor(Color.parseColor("#CCCCCC"), Color.parseColor("#FFFFFF"));
 
@@ -198,7 +200,7 @@ public class RegisterActivity extends Activity {
                 params.put("mobile", mobile);
                 params.put("email", email);
                 params.put("password", password);
-                params.put("address", "");
+                params.put("address", location);
                 params.put("lat", "");
                 params.put("lng", "");
 
@@ -277,7 +279,7 @@ public class RegisterActivity extends Activity {
                 params.put("mobile", mobile);
                 params.put("email", email);
                 params.put("password", password);
-                params.put("address", "");
+                params.put("address", location);
                 params.put("lat", "");
                 params.put("lng", "");
 
@@ -325,9 +327,13 @@ public class RegisterActivity extends Activity {
         // Choice between user and agent handled here
         if(userLogin){
 
+            locate();
+
             register();
 
         } else {
+
+            locate();
 
             btnRegister.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {

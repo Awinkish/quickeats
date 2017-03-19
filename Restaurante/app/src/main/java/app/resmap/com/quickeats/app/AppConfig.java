@@ -19,4 +19,6 @@ public class AppConfig {
 
 	public static String URL_UPDATE = "https://www.dawagitours.co.ke/quickeats/account_update.php";
 
+	public static String URL_ADDRESS = "https://www.dawagitours.co.ke/quickeats/address.php";
+
 }

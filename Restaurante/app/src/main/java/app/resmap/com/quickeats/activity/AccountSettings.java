@@ -159,7 +159,7 @@ public class AccountSettings extends AppCompatActivity implements View.OnClickLi
     /**
      * RecyclerView item decoration - give equal margin around grid item
      */
-    private class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+    static class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
 
         private int spanCount;
         private int spacing;

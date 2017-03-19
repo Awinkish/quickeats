@@ -1,3 +1,8 @@
+
+Editing:  
+/home/dawagito/public_html/quickeats/include/DB_Functions.php
+ Encoding:    Re-open Use Code Editor     Close  Save Changes
+
 <?php
 
 
@@ -242,6 +247,41 @@ class DB_Functions {
         }
     }
 
+   public function updateEntityExclusive($fname, $sname, $mobile, $email, $email_old) {
+
+
+        $sql = "UPDATE users SET firstname = ".$fname.", lastname =".$sname." , phoneno=".$mobile." , email=".$email." WHERE email = ".$email_old."";
+
+        if ($conn->query($sql) === TRUE) {
+            return $user;
+        } else {
+            return false;
+        }
+
+    }
+
+   public function storeAddress($uid, $address, $nickname, $description) {
+
+        $stmt = $this->conn->prepare("INSERT INTO addresses(user_id, formatted_address, nickname) VALUES(?, ?, ?)");
+        $stmt->bind_param("sss", $uid, $address, $nickname);
+        $result = $stmt->execute();
+        $stmt->close();
+
+        // check for successful store
+        if ($result) {
+            $stmt = $this->conn->prepare("SELECT * FROM users WHERE uid = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $user = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+
+            return $user;
+        } else {
+            return false;
+        }
+    }
+
 }
 
 ?>
+
